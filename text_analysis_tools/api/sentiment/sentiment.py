@@ -36,10 +36,8 @@ class SentimentAnalysis():
             if len(words) > 2:
                 for i in range(2, len(words)):
                     score += self.sentiment_score_dic.get(words[i], 0) * self.notwords.get(words[i-1], 1) * \
-                             self.degree_score.get(words[i-1], 1) * self.degree_score.get(words[i-2], 1) * \
-                             self.notwords.get(words[i-2], 1)
+                                 self.degree_score.get(words[i-1], 1) * self.degree_score.get(words[i-2], 1) * \
+                                 self.notwords.get(words[i-2], 1)
         if score < 0:
             return {'negative': score}
-        if score > 0:
-            return {'positive': score}
-        return {'middle': score}
+        return {'positive': score} if score > 0 else {'middle': score}

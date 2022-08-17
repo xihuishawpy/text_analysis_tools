@@ -103,8 +103,5 @@ class TextRankSummarization:
 
         selected_sentences_index = sorted(sentences_ranks[:int(len(origin_sentences)*self.ratio)])
 
-        summary = []
-        for idx in selected_sentences_index:
-            summary.append(origin_sentences[idx])
-
+        summary = [origin_sentences[idx] for idx in selected_sentences_index]
         return ''.join(summary)

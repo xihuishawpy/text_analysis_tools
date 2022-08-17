@@ -26,7 +26,7 @@ class TopicKeywords:
     def print_top_words(self, model, feature_names, n_top_words):
         ret = {}
         for topic_idx, topic in enumerate(model.components_):
-            key = "topic_{}".format(topic_idx)
+            key = f"topic_{topic_idx}"
             val = [feature_names[i] for i in topic.argsort()[:-n_top_words - 1:-1]]
             ret[key] = val
         return ret

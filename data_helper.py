@@ -9,7 +9,7 @@ def change_cls_data_to_fasttext(raw_data_path, fasttext_path):
         with open(fasttext_path, 'w', encoding='utf-8') as f_w:
             for line in f:
                 lis = line.strip().split('\t')
-                f_w.write("__label__{} {}\n".format(lis[0], " ".join(jieba.lcut(lis[1]))))
+                f_w.write(f'__label__{lis[0]} {" ".join(jieba.lcut(lis[1]))}\n')
 
 def make_synonym_dict(text_file_path, text_file_path2, json_file_path):
     synonym_dict = {}
@@ -23,14 +23,12 @@ def make_synonym_dict(text_file_path, text_file_path2, json_file_path):
     with open(text_file_path2, encoding='utf-8') as f_r:
         for line in f_r:
             lis = line.strip().split()
-            if lis[0] in synonym_dict.keys():
+            if lis[0] in synonym_dict:
                 synonym_dict[lis[0]].append(lis[1])
             else:
                 synonym_dict[lis[0]] = [lis[1]]
 
-    ret = {}
-    for key, val in synonym_dict.items():
-        ret[key] = list(set(val))
+    ret = {key: list(set(val)) for key, val in synonym_dict.items()}
     with open(json_file_path, 'w', encoding='utf-8') as f_w:
         json.dump(ret, f_w, indent=4, ensure_ascii=False)
 
