@@ -20,24 +20,22 @@ class LtpParser:
     '''语义角色标注'''
     def format_labelrole(self, hidden):
         roles = self.ltp.srl(hidden, keep_empty=False)
-        roles_dict = {}
-        for role in roles[0]:
-            roles_dict[role[0]] = {arg[0]: [arg[0], arg[1], arg[2]] for arg in role[1]}
-        return roles_dict
+        return {
+            role[0]: {arg[0]: [arg[0], arg[1], arg[2]] for arg in role[1]}
+            for role in roles[0]
+        }
 
     '''句法分析---为句子中的每个词语维护一个保存句法依存儿子节点的字典'''
     def build_parse_child_dict(self, words, postags, arcs):
         child_dict_list = []
         format_parse_list = []
         for index in range(len(words)):
-            child_dict = dict()
+            child_dict = {}
             for arc_index in range(len(arcs)):
                 if arcs[arc_index][1] == index+1:   # arcs的索引从1开始
-                    if arcs[arc_index][2] in child_dict:
-                        child_dict[arcs[arc_index][2]].append(arc_index)
-                    else:
+                    if arcs[arc_index][2] not in child_dict:
                         child_dict[arcs[arc_index][2]] = []
-                        child_dict[arcs[arc_index][2]].append(arc_index)
+                    child_dict[arcs[arc_index][2]].append(arc_index)
             child_dict_list.append(child_dict)
         rely_id = [arc[1] for arc in arcs]  # 提取依存父节点id
         relation = [arc[2] for arc in arcs]  # 提取依存关系
@@ -109,39 +107,36 @@ class TripleExtraction():
                 if flag == '1':
                     svos.append(triple)
                     tmp = 0
-            if tmp == 1:
-                # 如果语义角色标记为空，则使用依存句法进行抽取
-                if postags[index]:
-                    # 抽取以谓词为中心的事实三元组
-                    child_dict = child_dict_list[index]
-                    # 主谓宾
-                    if 'SBV' in child_dict and 'VOB' in child_dict:
-                        r = words[index]
-                        e1 = self.complete_e(words, postags, child_dict_list, child_dict['SBV'][0])
-                        e2 = self.complete_e(words, postags, child_dict_list, child_dict['VOB'][0])
-                        svos.append([e1, r, e2])
+            if tmp == 1 and postags[index]:
+                # 抽取以谓词为中心的事实三元组
+                child_dict = child_dict_list[index]
+                # 主谓宾
+                if 'SBV' in child_dict and 'VOB' in child_dict:
+                    r = words[index]
+                    e1 = self.complete_e(words, postags, child_dict_list, child_dict['SBV'][0])
+                    e2 = self.complete_e(words, postags, child_dict_list, child_dict['VOB'][0])
+                    svos.append([e1, r, e2])
 
-                    # 定语后置，动宾关系
-                    relation = arcs[index][0]
-                    head = arcs[index][2]
-                    if relation == 'ATT':
-                        if 'VOB' in child_dict:
-                            e1 = self.complete_e(words, postags, child_dict_list, head - 1)
-                            r = words[index]
-                            e2 = self.complete_e(words, postags, child_dict_list, child_dict['VOB'][0])
-                            temp_string = r + e2
-                            if temp_string == e1[:len(temp_string)]:
-                                e1 = e1[len(temp_string):]
-                            if temp_string not in e1:
-                                svos.append([e1, r, e2])
-                    # 含有介宾关系的主谓动补关系
-                    if 'SBV' in child_dict and 'CMP' in child_dict:
-                        e1 = self.complete_e(words, postags, child_dict_list, child_dict['SBV'][0])
-                        cmp_index = child_dict['CMP'][0]
-                        r = words[index] + words[cmp_index]
-                        if 'POB' in child_dict_list[cmp_index]:
-                            e2 = self.complete_e(words, postags, child_dict_list, child_dict_list[cmp_index]['POB'][0])
-                            svos.append([e1, r, e2])
+                # 定语后置，动宾关系
+                relation = arcs[index][0]
+                head = arcs[index][2]
+                if relation == 'ATT' and 'VOB' in child_dict:
+                    e1 = self.complete_e(words, postags, child_dict_list, head - 1)
+                    r = words[index]
+                    e2 = self.complete_e(words, postags, child_dict_list, child_dict['VOB'][0])
+                    temp_string = r + e2
+                    if temp_string == e1[:len(temp_string)]:
+                        e1 = e1[len(temp_string):]
+                    if temp_string not in e1:
+                        svos.append([e1, r, e2])
+                # 含有介宾关系的主谓动补关系
+                if 'SBV' in child_dict and 'CMP' in child_dict:
+                    e1 = self.complete_e(words, postags, child_dict_list, child_dict['SBV'][0])
+                    cmp_index = child_dict['CMP'][0]
+                    r = words[index] + words[cmp_index]
+                    if 'POB' in child_dict_list[cmp_index]:
+                        e2 = self.complete_e(words, postags, child_dict_list, child_dict_list[cmp_index]['POB'][0])
+                        svos.append([e1, r, e2])
         return svos
 
     '''对找出的主语或者宾语进行扩展'''

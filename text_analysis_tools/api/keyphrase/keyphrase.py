@@ -24,8 +24,7 @@ class KeyPhraseExtraction():
     def cut_sentences(self, text):
         """文本分句，然后分词"""
         sentences = re.findall(".*?[。？！]", text)
-        cut_sentences = [jieba.lcut(sent) for sent in sentences]
-        return cut_sentences
+        return [jieba.lcut(sent) for sent in sentences]
 
     def key_words_extraction(self, text):
         """提取关键词"""
@@ -34,7 +33,7 @@ class KeyPhraseExtraction():
             keywords_score = jieba.analyse.extract_tags(text, topK=self.topk, withWeight=True)
         elif self.method == 'textrank':
             keywords_score = jieba.analyse.textrank(text, topK=self.topk, withWeight=True)
-        return {word: score for word, score in keywords_score}
+        return dict(keywords_score)
 
     def key_phrase_extraction(self, text):
         keyword_score = self.key_words_extraction(text)
@@ -49,19 +48,19 @@ class KeyPhraseExtraction():
                 if word in keywords:
                     temp.append(word)
                 else:
-                    if len(temp) > 1:
-                        if temp not in key_phrase:
-                            key_phrase.append(temp)
+                    if len(temp) > 1 and temp not in key_phrase:
+                        key_phrase.append(temp)
                     temp = []
 
         # 短语之间可能存在冗余信息，进行过滤
         key_phrase_filter = []
         for phrase in key_phrase:
-            flag = False
-            for item in key_phrase_filter:
-                if len(set(phrase) & set(item)) >= min(len(set(phrase)), len(set(item)))/2.0:
-                    flag = True
-                    break
+            flag = any(
+                len(set(phrase) & set(item))
+                >= min(len(set(phrase)), len(set(item))) / 2.0
+                for item in key_phrase_filter
+            )
+
             if not flag:
                     key_phrase_filter.append(phrase)
 

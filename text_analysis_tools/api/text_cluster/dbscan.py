@@ -34,8 +34,17 @@ class DbscanClustering:
         """
         corpus = []
         with open(corpus_path, 'r', encoding='utf-8') as f:
-            for line in f:
-                corpus.append(' '.join([word for word in jieba.lcut(line.strip()) if word not in self.stopwords]))
+            corpus.extend(
+                ' '.join(
+                    [
+                        word
+                        for word in jieba.lcut(line.strip())
+                        if word not in self.stopwords
+                    ]
+                )
+                for line in f
+            )
+
         return corpus
 
     def get_text_tfidf_matrix(self, corpus):
@@ -46,12 +55,7 @@ class DbscanClustering:
         """
         tfidf = self.transformer.fit_transform(self.vectorizer.fit_transform(corpus))
 
-        # 获取词袋中所有词语
-        # words = self.vectorizer.get_feature_names()
-
-        # 获取tfidf矩阵中权重
-        weights = tfidf.toarray()
-        return weights
+        return tfidf.toarray()
 
     def pca(self, weights, n_components=2):
         """
@@ -94,7 +98,7 @@ class DbscanClustering:
         # 每个样本所属的簇
         result = {}
         for text_idx, label_idx in enumerate(y):
-            key = "cluster_{}".format(label_idx)
+            key = f"cluster_{label_idx}"
             if key not in result:
                 result[key] = [text_idx]
             else:

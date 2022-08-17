@@ -33,17 +33,8 @@ def hash_keyword_add_weight(keyword_weight, len_hash=64):
     add_weight = [0] * len_hash
     for keyword, weight in keyword_weight:
         for i in range(len_hash):
-            if keyword[i] == "1":
-                add_weight[i] += weight
-            else:
-                add_weight[i] += -1 * weight
-    result = ""
-    for _ in add_weight:
-        if _ >= 0:
-            result += "1"
-        else:
-            result += "0"
-    return result
+            add_weight[i] += weight if keyword[i] == "1" else -1 * weight
+    return "".join("1" if _ >= 0 else "0" for _ in add_weight)
 
 
 def cal_hamming_distance(hash_file1, hash_file2):
@@ -53,12 +44,8 @@ def cal_hamming_distance(hash_file1, hash_file2):
     :param hash_file2:
     :return:
     """
-    hamming_dis = 0
-    for i in range(len(hash_file1)):
-        if hash_file1[i] != hash_file2[i]:
-            hamming_dis += 1
     # print("海明距离：", hamming_dis)
-    return hamming_dis
+    return sum(hash_file1[i] != hash_file2[i] for i in range(len(hash_file1)))
 
 
 class SimHashSimilarity():
@@ -76,8 +63,7 @@ class SimHashSimilarity():
         tags2 = cut_words_weights(str2)
         hash_file1 = hash_keyword_add_weight(tags1)
         hash_file2 = hash_keyword_add_weight(tags2)
-        hamming_dis = cal_hamming_distance(hash_file1, hash_file2)
-        return hamming_dis
+        return cal_hamming_distance(hash_file1, hash_file2)
 
 
 

@@ -39,7 +39,7 @@ class Fasttext:
             if not os.path.exists(self.save_model_path):
                 print("MODEL: {} is not EXIST ....")
                 sys.exit()
-            print("LOAD MODEL FROM: {}".format(self.save_model_path))
+            print(f"LOAD MODEL FROM: {self.save_model_path}")
             self.classifier = ff.load_model(self.save_model_path)
         else:
             self.classifier = None
@@ -51,19 +51,19 @@ class Fasttext:
         train_result = classifier.test(self.train_data_path)
 
         print("### TRAIN RESULT ###")
-        print("Train Samples: {}".format(train_result[0]))
-        print("Train Precision: {}".format(train_result[1]))
-        print("Train Recall: {}\n\n".format(train_result[2]))
+        print(f"Train Samples: {train_result[0]}")
+        print(f"Train Precision: {train_result[1]}")
+        print(f"Train Recall: {train_result[2]}\n\n")
 
         if self.test_data_path:
             test_result = classifier.test(self.test_data_path)
 
             print("### TEST RESULT ###")
-            print("Test Samples: {}".format(test_result[0]))
-            print("Test Precision: {}".format(test_result[1]))
-            print("Test Recall: {}\n\n".format(test_result[2]))
+            print(f"Test Samples: {test_result[0]}")
+            print(f"Test Precision: {test_result[1]}")
+            print(f"Test Recall: {test_result[2]}\n\n")
 
-        print("model save to {}".format(self.save_model_path))
+        print(f"model save to {self.save_model_path}")
 
     def predict(self, list_str):
         result = self.classifier.predict(list_str, k=self.k, threshold=self.threshold)

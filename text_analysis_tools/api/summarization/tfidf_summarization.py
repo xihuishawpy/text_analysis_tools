@@ -18,18 +18,14 @@ def load_stopwords(stopwords_path):
 def split_doc(doc):
     separators = ['。', '!', '！', '？', '?']
     for sep in separators:
-        doc = doc.replace(sep, sep+'##')
+        doc = doc.replace(sep, f'{sep}##')
     sentences = doc.split('##')
     return sentences[:-1]
 
 
 def calculate_sentence_score(sentence, stopwords):
     jieba_ret = jieba.analyse.extract_tags(sentence, topK=100, withWeight=True, allowPOS=('ns', 'n', 'vn', 'v'))
-    sentence_score = 0
-    for word, score in jieba_ret:
-        if word not in stopwords:
-            sentence_score += score
-    return sentence_score
+    return sum(score for word, score in jieba_ret if word not in stopwords)
 
 
 class TfidfSummarization:
@@ -53,9 +49,14 @@ class TfidfSummarization:
 
         # 将较高的分的句子按原文本进行排序输出
         selected_sentences = {sent: sentences_order[sent] for sent, score in sentences_score_order}
-        summary = ''.join([sent for sent, order in sorted(selected_sentences.items(), key=lambda item: item[1])])
-
-        return summary
+        return ''.join(
+            [
+                sent
+                for sent, order in sorted(
+                    selected_sentences.items(), key=lambda item: item[1]
+                )
+            ]
+        )
 
 
 if __name__ == '__main__':

@@ -41,7 +41,7 @@ def kmeans_cluster(data_path="./test_data/test_data_cluster.txt",
     """
     Kmeans = KmeansClustering()
     result = Kmeans.kmeans(data_path, n_clusters=n_clusters)
-    print("keams result: {}\n".format(result))
+    print(f"keams result: {result}\n")
 
 
 def dbscan_cluster(data_path="./test_data/test_data_cluster.txt",
@@ -56,7 +56,7 @@ def dbscan_cluster(data_path="./test_data/test_data_cluster.txt",
     """
     dbscan = DbscanClustering()
     result = dbscan.dbscan(corpus_path=data_path, eps=eps, min_samples=min_samples, fig=fig)
-    print("dbscan result: {}\n".format(result))
+    print(f"dbscan result: {result}\n")
 
 
 """
@@ -75,7 +75,7 @@ def cosion_sismilarity():
     text2 = "回家吃饭啦，小明"
     cosion = CosionSimilarity()
     similiar = cosion.similarity(text1, text2)
-    print("cosion similarity result: {}\n".format(similiar))
+    print(f"cosion similarity result: {similiar}\n")
 
 
 def edit_similarity():
@@ -85,7 +85,7 @@ def edit_similarity():
     """
     edit = EditSimilarity()
     edit_dis = edit.edit_dist("abc", "ab")
-    print("edit distance: {}\n".format(edit_dis))
+    print(f"edit distance: {edit_dis}\n")
 
 
 def simhash_similarity():
@@ -95,7 +95,7 @@ def simhash_similarity():
     """
     simhash = SimHashSimilarity()
     sim = simhash.run_simhash("你妈妈叫你回家吃饭了，小明", "小明, 妈妈让你回家吃饭了")
-    print("simhash result: {}\n".format(sim))
+    print(f"simhash result: {sim}\n")
 
 
 """
@@ -113,7 +113,7 @@ def tfidf_keywords(delete_stopwords=True, topK=20, withWeight=True):
     """
     tfidf = TfidfKeywords(delete_stopwords=delete_stopwords, topK=topK, withWeight=withWeight)
     keywords = tfidf.keywords("小明的妈妈让你回家吃饭了")
-    print("tfidf keywords result: {}\n".format(keywords))
+    print(f"tfidf keywords result: {keywords}\n")
 
 
 def textrank_keywords(delete_stopwords=True, topK=20, withWeight=True):
@@ -126,7 +126,7 @@ def textrank_keywords(delete_stopwords=True, topK=20, withWeight=True):
     """
     textrank = TextRankKeywords(delete_stopwords=delete_stopwords, topK=topK, withWeight=withWeight)
     keywords = textrank.keywords("小明的妈妈让你回家吃饭了")
-    print("textrank keywords result: {}\n".format(keywords))
+    print(f"textrank keywords result: {keywords}\n")
 
 """
 关键短语抽取
@@ -146,10 +146,10 @@ def keyphrase_extract(topk=100, method='tfidf', with_word=True, save_pic="./word
         text = f.read()
     key_phrase_extractor = KeyPhraseExtraction(topk=topk, method=method, with_word=with_word)
     key_phrase = key_phrase_extractor.key_phrase_extraction(text)
-    print("keyphrase result: {}\n".format(key_phrase))
+    print(f"keyphrase result: {key_phrase}\n")
     if save_pic:
         key_phrase_extractor.wordcloud(key_phrase, save_path=save_pic, with_mask=True)
-        print("word cloud save to: {}\n".format(save_pic))
+        print(f"word cloud save to: {save_pic}\n")
 
 
 """
@@ -158,7 +158,7 @@ def keyphrase_extract(topk=100, method='tfidf', with_word=True, save_pic="./word
 def sentiment_analysis():
     senti = SentimentAnalysis()
     senti = senti.analysis("今天天气好晴朗")
-    print("sentiment result: {}".format(senti))
+    print(f"sentiment result: {senti}")
 
 
 """
@@ -177,7 +177,7 @@ def spell_correct(corpus_path="./test_data/水浒传.txt",
     spell_correct = SpellCorrect(corpus_path=corpus_path, train=train, ret_num=ret_num, model_dir=model_dir)
     ret1 = spell_correct.correct('松江')
     ret2 = spell_correct.correct('李奎')
-    print("spell correct result: {}=>{}  {}=>{}\n".format('松江', ret1, '李奎', ret2))
+    print(f"spell correct result: {'松江'}=>{ret1}  {'李奎'}=>{ret2}\n")
 
 
 """
@@ -194,7 +194,7 @@ def tfidf_summarization(ratio=0.2):
         doc = f.read()
     summ = TfidfSummarization(ratio=ratio)
     summ = summ.analysis(doc)
-    print("tfidf summarization result: {}\n".format(summ))
+    print(f"tfidf summarization result: {summ}\n")
 
 def textrank_summarization(ratio=0.2):
     """
@@ -206,7 +206,7 @@ def textrank_summarization(ratio=0.2):
         doc = f.read()
     summ = TextRankSummarization(ratio=ratio)
     summ = summ.analysis(doc)
-    print("textrank summarization result: {}\n".format(summ))
+    print(f"textrank summarization result: {summ}\n")
 
 
 """
@@ -226,7 +226,7 @@ def topic_keywords(n_components=5, n_top_words=10, max_iter=10):
     topic_keywords = TopicKeywords(train_data=train_data, n_components=n_components,
                                    n_top_words=n_top_words, max_iter=max_iter)
     keywords = topic_keywords.analysis()
-    print("topic keywords: {}\n".format(keywords))
+    print(f"topic keywords: {keywords}\n")
 
 
 """

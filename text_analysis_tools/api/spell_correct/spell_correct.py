@@ -63,7 +63,7 @@ class SpellCorrect:
 
     def known(self, words):
         "The subset of `words` that appear in the dictionary of WORDS."
-        return set(w for w in words if w in self.WORDS)
+        return {w for w in words if w in self.WORDS}
 
     def edits1(self, word):
         "All edits that are one edit away from `word`."
@@ -90,12 +90,10 @@ class SpellCorrect:
     def correct(self, word):
         word_pinyin = self.p.get_pinyin(word, splitter='')
         candidate_pinyin = self.candidates(word_pinyin)
-        ret_dic = {}
         words = []
         for pinyin in candidate_pinyin:
             words.extend(self.pinyin_word[pinyin])
-        for word in words:
-            ret_dic[word] = self.word_count.get(word, 0)
+        ret_dic = {word: self.word_count.get(word, 0) for word in words}
         sort_word = sorted(ret_dic.items(), key=lambda x: x[1], reverse=True)
         return [item[0] for item in sort_word[:self.ret_num]]
 
